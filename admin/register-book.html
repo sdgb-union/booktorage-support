@@ -1,0 +1,103 @@
+﻿<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>직접 등록 (PC) - Booktorage Admin</title>
+    <link rel="stylesheet" href="./assets/admin.css" />
+    <script src="./config.public.js"></script>
+    <script>
+      window.__ADMIN_CONFIG__ = window.__ADMIN_CONFIG__ || {};
+    </script>
+    <script type="module" src="./assets/admin-shell.js"></script>
+    <script type="module" src="./assets/register-book.js"></script>
+  </head>
+  <body>
+    <main class="container">
+      <section class="topbar card">
+        <div>
+          <div class="brand">직접 등록 (PC)</div>
+          <a href="./index.html">관리자 홈으로</a>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="user-chip" data-user-email>로그인 필요</span>
+          <button type="button" class="btn-secondary" data-logout-button>로그아웃</button>
+        </div>
+      </section>
+
+      <section class="card" data-login-section>
+        <h2>관리자 로그인</h2>
+        <p data-login-hint></p>
+        <form class="form" data-login-form style="margin-top:12px;">
+          <label>
+            관리자 이메일
+            <input type="email" autocomplete="email" data-login-email required />
+          </label>
+          <button type="submit" class="btn-primary">
+            <span data-login-button-label>로그인 링크 전송</span>
+          </button>
+        </form>
+        <div class="status" style="margin-top:10px;" data-auth-message>로그인이 필요합니다.</div>
+      </section>
+
+      <section class="card hidden" data-app-section>
+        <h2>등록 검토 요청</h2>
+        <p>제출하면 `register-book` Edge Function으로 전송됩니다.</p>
+
+        <form class="form" data-register-form style="margin-top:14px;">
+          <div class="row-2">
+            <label>
+              제목
+              <input id="title" type="text" required />
+            </label>
+            <label>
+              저자
+              <input id="author" type="text" required />
+            </label>
+          </div>
+
+          <div class="row-2">
+            <label>
+              출판사
+              <input id="publisher" type="text" required />
+            </label>
+            <label>
+              페이지 수
+              <input id="pageCount" type="number" min="1" required />
+            </label>
+          </div>
+
+          <div class="row-2">
+            <label>
+              출간일
+              <input id="publishedAt" type="date" required />
+            </label>
+            <label>
+              표지 이미지
+              <input id="imageFile" type="file" accept="image/*" required />
+            </label>
+          </div>
+
+          <div class="preview hidden" data-image-preview>
+            <img alt="preview" data-image-preview-img />
+            <div data-image-meta>이미지 준비 전</div>
+          </div>
+
+          <label>
+            등록 의견
+            <textarea id="opinion" placeholder="선택 입력"></textarea>
+          </label>
+
+          <button class="btn-primary" type="submit" data-submit-button>등록 검토 요청</button>
+          <div class="status" data-submit-status>폼을 입력하세요.</div>
+        </form>
+
+        <div style="margin-top:14px;">
+          <div style="font-weight:700; margin-bottom:6px;">응답</div>
+          <pre class="mono" data-response-json>{}</pre>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
+

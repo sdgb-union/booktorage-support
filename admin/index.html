@@ -1,0 +1,53 @@
+﻿<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Booktorage Admin</title>
+    <link rel="stylesheet" href="./assets/admin.css" />
+    <script src="./config.public.js"></script>
+    <script>
+      window.__ADMIN_CONFIG__ = window.__ADMIN_CONFIG__ || {};
+    </script>
+    <script type="module" src="./assets/admin-shell.js"></script>
+  </head>
+  <body>
+    <main class="container">
+      <section class="topbar card">
+        <div class="brand">Booktorage Admin</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="user-chip" data-user-email>로그인 필요</span>
+          <button type="button" class="btn-secondary" data-logout-button>로그아웃</button>
+        </div>
+      </section>
+
+      <section class="card" data-login-section>
+        <h2>관리자 로그인</h2>
+        <p data-login-hint></p>
+        <form class="form" data-login-form style="margin-top:12px;">
+          <label>
+            관리자 이메일
+            <input type="email" autocomplete="email" data-login-email required />
+          </label>
+          <button type="submit" class="btn-primary">
+            <span data-login-button-label>로그인 링크 전송</span>
+          </button>
+        </form>
+        <div class="status" style="margin-top:10px;" data-auth-message>로그인이 필요합니다.</div>
+      </section>
+
+      <section class="grid hidden" data-app-section>
+        <article class="card">
+          <h2>관리자 페이지</h2>
+          <div class="nav-list" style="margin-top:12px;">
+            <a class="nav-item" href="./register-book.html">
+              <strong>직접 등록 (PC)</strong><br />
+              <span style="color:var(--muted)">관리자 이메일 즉시 등록이 포함된 register-book 흐름</span>
+            </a>
+          </div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>
+
