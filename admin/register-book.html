@@ -58,8 +58,8 @@
               <input id="publisher" type="text" required />
             </label>
             <label>
-              페이지 수
-              <input id="pageCount" type="number" min="1" required />
+              페이지 수 (선택)
+              <input id="pageCount" type="number" min="1" />
             </label>
           </div>
 
@@ -76,8 +76,15 @@
 
           <div class="row-2">
             <label>
-              출간일
-              <input id="publishedAt" type="date" required />
+              출간일 (YYYYMMDD)
+              <input
+                id="publishedAt"
+                type="text"
+                inputmode="numeric"
+                placeholder="예: 20260306"
+                maxlength="8"
+                required
+              />
             </label>
             <label>
               표지 이미지

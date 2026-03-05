@@ -46,6 +46,8 @@
 - `register-book.html`: `register-book` Edge Function 호출
 - 로그인 UI는 이메일 입력 없이 `sdgb.union@gmail.com`으로 매직링크를 요청하는 버튼만 제공합니다.
 - 관리자 등록 폼에서 `ISBN13`, `ISBN10`, `description` 입력을 추가로 지원합니다.
+- 관리자 등록 폼에서 `page_count`는 선택 입력(nullable)입니다.
+- 출간일은 `YYYYMMDD` 형식으로 입력하면 서버 전송 시 `YYYY-MM-DD`로 변환됩니다.
 
 ## 5) 권한/동작 요약
 

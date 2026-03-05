@@ -37,6 +37,39 @@ function sanitizeBaseName(name) {
   return safe || "book-cover";
 }
 
+function normalizePublishedAtInput(raw) {
+  const text = String(raw || "").trim();
+  if (!text) return null;
+
+  let y = 0;
+  let m = 0;
+  let d = 0;
+
+  if (/^\d{8}$/.test(text)) {
+    y = Number(text.slice(0, 4));
+    m = Number(text.slice(4, 6));
+    d = Number(text.slice(6, 8));
+  } else if (/^\d{4}-\d{2}-\d{2}$/.test(text)) {
+    const parts = text.split("-");
+    y = Number(parts[0]);
+    m = Number(parts[1]);
+    d = Number(parts[2]);
+  } else {
+    return null;
+  }
+
+  const date = new Date(Date.UTC(y, m - 1, d));
+  if (
+    date.getUTCFullYear() !== y ||
+    date.getUTCMonth() + 1 !== m ||
+    date.getUTCDate() !== d
+  ) {
+    return null;
+  }
+
+  return `${String(y).padStart(4, "0")}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+}
+
 function loadImageElement(blob) {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(blob);
@@ -119,12 +152,16 @@ function validateForm() {
   if (!els.author.value.trim()) return "저자를 입력하세요.";
   if (!els.publisher.value.trim()) return "출판사를 입력하세요.";
 
-  const pageCount = Number(els.pageCount.value);
-  if (!Number.isFinite(pageCount) || pageCount <= 0) {
-    return "페이지 수는 1 이상의 숫자여야 합니다.";
+  const pageText = String(els.pageCount.value || "").trim();
+  if (pageText) {
+    const pageCount = Number(pageText);
+    if (!Number.isFinite(pageCount) || pageCount <= 0) {
+      return "페이지 수는 1 이상의 숫자여야 합니다.";
+    }
   }
 
-  if (!els.publishedAt.value) return "출간일을 선택하세요.";
+  const publishedAt = normalizePublishedAtInput(els.publishedAt.value);
+  if (!publishedAt) return "출간일은 YYYYMMDD 형식으로 입력하세요.";
   if (!encodedImage) return "표지 이미지를 선택하세요.";
 
   return "";
@@ -193,6 +230,13 @@ async function submitRegistration(event) {
   }
 
   try {
+    const pageText = String(els.pageCount.value || "").trim();
+    const normalizedPublishedAt = normalizePublishedAtInput(els.publishedAt.value);
+
+    if (!normalizedPublishedAt) {
+      throw new Error("출간일은 YYYYMMDD 형식으로 입력하세요.");
+    }
+
     const payload = {
       title: els.title.value.trim(),
       author: els.author.value.trim(),
@@ -202,8 +246,8 @@ async function submitRegistration(event) {
       image_base64: encodedImage.base64,
       image_mime_type: encodedImage.mimeType,
       image_filename: encodedImage.fileName,
-      page_count: Number(els.pageCount.value),
-      published_at: els.publishedAt.value,
+      page_count: pageText ? Number(pageText) : null,
+      published_at: normalizedPublishedAt,
       description: els.bookDescription.value.trim(),
       opinion: els.opinion.value.trim(),
     };
