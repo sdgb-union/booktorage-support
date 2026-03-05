@@ -257,7 +257,16 @@ async function submitRegistration(event) {
     });
 
     if (error) {
-      throw new Error(error.message || "요청 실패");
+      let detail = "";
+      if (error.context instanceof Response) {
+        try {
+          const body = await error.context.json();
+          detail = String(body?.error || body?.message || "").trim();
+        } catch (_) {
+          detail = "";
+        }
+      }
+      throw new Error(detail || error.message || "요청 실패");
     }
 
     setStatus("등록 검토 요청 완료", "ok");
