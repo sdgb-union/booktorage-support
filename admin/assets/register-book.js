@@ -109,7 +109,7 @@ async function canvasToBlob(canvas, quality) {
         }
         resolve(blob);
       },
-      "image/webp",
+      "image/jpeg",
       quality,
     );
   });
@@ -181,12 +181,12 @@ async function handleImageSelection() {
   try {
     const compressedBlob = await compressImageUnder50Kb(file);
     const base64 = await blobToBase64(compressedBlob);
-    const fileName = `${sanitizeBaseName(file.name)}.webp`;
+    const fileName = `${sanitizeBaseName(file.name)}.jpg`;
 
     encodedImage = {
       base64,
       fileName,
-      mimeType: "image/webp",
+      mimeType: "image/jpeg",
       size: compressedBlob.size,
     };
 
