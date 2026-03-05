@@ -42,6 +42,7 @@
 
 - `index.html`: 관리자 홈
 - `register-book.html`: `register-book` Edge Function 호출
+- 로그인 UI는 이메일 입력 없이 `sdgb.union@gmail.com`으로 매직링크를 요청하는 버튼만 제공합니다.
 
 ## 5) 권한/동작 요약
 

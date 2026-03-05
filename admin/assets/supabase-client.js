@@ -20,6 +20,10 @@ export function isClientEmailAllowed(email) {
   return normalized === FIXED_ADMIN_EMAIL;
 }
 
+export function getFixedAdminEmail() {
+  return FIXED_ADMIN_EMAIL;
+}
+
 validateConfig();
 
 export const supabase = createClient(config.supabaseUrl, config.supabaseAnonKey, {

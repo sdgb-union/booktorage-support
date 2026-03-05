@@ -1,10 +1,14 @@
-﻿import { getConfig, isClientEmailAllowed, supabase } from "./supabase-client.js";
+﻿import {
+  getConfig,
+  getFixedAdminEmail,
+  isClientEmailAllowed,
+  supabase,
+} from "./supabase-client.js";
 
 const els = {
   loginSection: document.querySelector("[data-login-section]"),
   appSection: document.querySelector("[data-app-section]"),
   loginForm: document.querySelector("[data-login-form]"),
-  loginEmail: document.querySelector("[data-login-email]"),
   loginButtonLabel: document.querySelector("[data-login-button-label]"),
   loginHint: document.querySelector("[data-login-hint]"),
   authMessage: document.querySelector("[data-auth-message]"),
@@ -60,11 +64,7 @@ async function restoreSession() {
 async function handleEmailOtpLogin(event) {
   event.preventDefault();
 
-  const email = String(els.loginEmail?.value || "").trim().toLowerCase();
-  if (!email) {
-    setAuthMessage("이메일을 입력하세요.", "error");
-    return;
-  }
+  const email = getFixedAdminEmail();
 
   if (!isClientEmailAllowed(email)) {
     setAuthMessage("허용된 관리자 이메일이 아닙니다.", "error");
@@ -87,30 +87,31 @@ async function handleEmailOtpLogin(event) {
 
   if (error) {
     setAuthMessage(error.message, "error");
-    if (els.loginButtonLabel) els.loginButtonLabel.textContent = "로그인 링크 전송";
+    if (els.loginButtonLabel) els.loginButtonLabel.textContent = "매직링크 요청";
     return;
   }
 
   setAuthMessage("로그인 링크를 이메일로 보냈습니다. 메일에서 링크를 열어주세요.", "ok");
-  if (els.loginButtonLabel) els.loginButtonLabel.textContent = "로그인 링크 재전송";
+  if (els.loginButtonLabel) els.loginButtonLabel.textContent = "매직링크 재요청";
 }
 
 async function handleLogout() {
   await supabase.auth.signOut();
   setAuthMessage("로그아웃됨");
   if (els.loginButtonLabel) {
-    els.loginButtonLabel.textContent = "로그인 링크 전송";
+    els.loginButtonLabel.textContent = "매직링크 요청";
   }
 }
 
 function mountHint() {
   const cfg = getConfig();
+  const email = getFixedAdminEmail();
 
   if (els.loginHint) {
     if (cfg.allowedEmailHint) {
       els.loginHint.textContent = `관리자 이메일로 로그인 링크를 받으세요. 예: ${cfg.allowedEmailHint}`;
     } else {
-      els.loginHint.textContent = "관리자 이메일로 로그인 링크를 받으세요.";
+      els.loginHint.textContent = `관리자 이메일(${email})로 로그인 링크를 받으세요.`;
     }
   }
 }
