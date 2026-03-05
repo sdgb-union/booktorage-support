@@ -9,6 +9,7 @@
 - 파일: `admin/config.public.js`
 - 현재 값은 `booktorage` Supabase 프로젝트 기준으로 세팅되어 있습니다.
 - 관리자 이메일은 코드/서버 모두 `sdgb.union@gmail.com` 기준입니다.
+- `magicLinkRedirectTo`를 운영 URL로 지정하세요. (예: `https://sdgb-union.github.io/booktorage-support/admin/index.html`)
 
 참고용 템플릿은 `config.example.js`입니다.
 
@@ -32,6 +33,7 @@
 1. Supabase Dashboard -> `Authentication` -> `Providers` -> `Email` 활성화
 2. `Enable email signups`는 관리자 전용이면 비활성 권장
 3. `Authentication` -> URL 설정의 Redirect URLs에 실제 페이지 URL 추가
+4. `config.public.js`의 `magicLinkRedirectTo` 값과 Redirect URLs가 정확히 일치해야 합니다.
 
 예시 (`admin/` 하위 배치 기준):
 

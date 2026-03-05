@@ -22,6 +22,17 @@ function setAuthMessage(message, type = "") {
   els.authMessage.textContent = message;
 }
 
+function resolveEmailRedirectTo() {
+  const cfg = getConfig();
+  const configured = String(cfg.magicLinkRedirectTo || "").trim();
+  if (configured) return configured;
+
+  const url = new URL(window.location.href);
+  url.hash = "";
+  url.search = "";
+  return url.toString();
+}
+
 function renderSession(session) {
   const email = session?.user?.email || "";
 
@@ -77,10 +88,12 @@ async function handleEmailOtpLogin(event) {
 
   setAuthMessage("로그인 링크 전송 중...");
 
+  const emailRedirectTo = resolveEmailRedirectTo();
+
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: window.location.href.split("#")[0],
+      emailRedirectTo,
       shouldCreateUser: false,
     },
   });
