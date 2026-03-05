@@ -65,6 +65,17 @@
 
           <div class="row-2">
             <label>
+              ISBN13 (관리자 선택)
+              <input id="isbn13" type="text" placeholder="예: 978..." />
+            </label>
+            <label>
+              ISBN10 (관리자 선택)
+              <input id="isbn10" type="text" placeholder="예: 89..." />
+            </label>
+          </div>
+
+          <div class="row-2">
+            <label>
               출간일
               <input id="publishedAt" type="date" required />
             </label>
@@ -78,6 +89,11 @@
             <img alt="preview" data-image-preview-img />
             <div data-image-meta>이미지 준비 전</div>
           </div>
+
+          <label>
+            도서 설명(description, 관리자 선택)
+            <textarea id="bookDescription" placeholder="DB description으로 저장됩니다."></textarea>
+          </label>
 
           <label>
             등록 의견
