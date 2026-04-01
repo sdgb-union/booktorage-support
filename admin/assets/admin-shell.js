@@ -22,15 +22,28 @@ function setAuthMessage(message, type = "") {
   els.authMessage.textContent = message;
 }
 
-function resolveEmailRedirectTo() {
-  const cfg = getConfig();
-  const configured = String(cfg.magicLinkRedirectTo || "").trim();
-  if (configured) return configured;
+function sanitizeRedirectUrl(value) {
+  const trimmed = String(value || "").trim();
+  if (!trimmed) return "";
 
-  const url = new URL(window.location.href);
+  const url = new URL(trimmed, window.location.href);
   url.hash = "";
-  url.search = "";
   return url.toString();
+}
+
+function isLocalhost(hostname) {
+  return hostname === "localhost" || hostname === "127.0.0.1";
+}
+
+function resolveEmailRedirectTo() {
+  const currentUrl = sanitizeRedirectUrl(window.location.href);
+  if (!isLocalhost(window.location.hostname)) {
+    return currentUrl;
+  }
+
+  const cfg = getConfig();
+  const configured = sanitizeRedirectUrl(cfg.magicLinkRedirectTo);
+  return configured || currentUrl;
 }
 
 function renderSession(session) {
