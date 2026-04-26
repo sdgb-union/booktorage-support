@@ -9,10 +9,13 @@ const els = {
   publisher: document.querySelector("#publisher"),
   isbn13: document.querySelector("#isbn13"),
   isbn10: document.querySelector("#isbn10"),
+  categoryId: document.querySelector("#categoryId"),
   pageCount: document.querySelector("#pageCount"),
   publishedAt: document.querySelector("#publishedAt"),
   bookDescription: document.querySelector("#bookDescription"),
   opinion: document.querySelector("#opinion"),
+  authorList: document.querySelector("[data-author-list]"),
+  addAuthorButton: document.querySelector("[data-add-author-button]"),
   imageFile: document.querySelector("#imageFile"),
   imagePreviewBox: document.querySelector("[data-image-preview]"),
   imagePreview: document.querySelector("[data-image-preview-img]"),
@@ -24,6 +27,21 @@ const els = {
 
 let currentSession = null;
 let encodedImage = null;
+
+const AUTHOR_TYPES = [
+  { value: "author", label: "지은이" },
+  { value: "writer", label: "글" },
+  { value: "illustrator", label: "그림" },
+  { value: "translator", label: "옮긴이" },
+  { value: "editor", label: "엮은이" },
+  { value: "photographer", label: "사진" },
+  { value: "designer", label: "디자인" },
+  { value: "other", label: "기타" },
+];
+
+const DEFAULT_ROLE_BY_TYPE = Object.fromEntries(
+  AUTHOR_TYPES.map((item) => [item.value, item.label]),
+);
 
 function setStatus(message, type = "") {
   if (!els.status) return;
@@ -160,11 +178,99 @@ function validateForm() {
     }
   }
 
+  const categoryIdText = String(els.categoryId.value || "").trim();
+  if (categoryIdText) {
+    const categoryId = Number(categoryIdText);
+    if (!Number.isInteger(categoryId) || categoryId <= 0) {
+      return "카테고리 ID는 1 이상의 정수여야 합니다.";
+    }
+  }
+
+  if (collectAuthorList().length === 0) {
+    return "저자 목록(author_list)을 1명 이상 입력하세요.";
+  }
+
   const publishedAt = normalizePublishedAtInput(els.publishedAt.value);
   if (!publishedAt) return "출간일은 YYYYMMDD 형식으로 입력하세요.";
   if (!encodedImage) return "표지 이미지를 선택하세요.";
 
   return "";
+}
+
+function createAuthorRow(author = { name: "", role: "지은이", type: "author" }) {
+  const row = document.createElement("div");
+  row.className = "author-row";
+
+  const nameLabel = document.createElement("label");
+  nameLabel.textContent = "이름";
+  const nameInput = document.createElement("input");
+  nameInput.type = "text";
+  nameInput.dataset.authorName = "true";
+  nameInput.value = author.name || "";
+  nameInput.placeholder = "예: 한강";
+  nameLabel.append(nameInput);
+
+  const roleLabel = document.createElement("label");
+  roleLabel.textContent = "역할명";
+  const roleInput = document.createElement("input");
+  roleInput.type = "text";
+  roleInput.dataset.authorRole = "true";
+  roleInput.value = author.role || DEFAULT_ROLE_BY_TYPE[author.type] || "기타";
+  roleInput.placeholder = "예: 저자, 옮긴이";
+  roleLabel.append(roleInput);
+
+  const typeLabel = document.createElement("label");
+  typeLabel.textContent = "타입";
+  const typeSelect = document.createElement("select");
+  typeSelect.dataset.authorType = "true";
+  AUTHOR_TYPES.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.textContent = item.label;
+    typeSelect.append(option);
+  });
+  typeSelect.value = AUTHOR_TYPES.some((item) => item.value === author.type)
+    ? author.type
+    : "other";
+  typeSelect.addEventListener("change", () => {
+    const previousDefaultRoles = new Set(Object.values(DEFAULT_ROLE_BY_TYPE));
+    if (!roleInput.value.trim() || previousDefaultRoles.has(roleInput.value.trim())) {
+      roleInput.value = DEFAULT_ROLE_BY_TYPE[typeSelect.value] || "기타";
+    }
+  });
+  typeLabel.append(typeSelect);
+
+  const removeButton = document.createElement("button");
+  removeButton.type = "button";
+  removeButton.className = "btn-danger";
+  removeButton.textContent = "삭제";
+  removeButton.dataset.removeAuthor = "true";
+
+  row.append(nameLabel, roleLabel, typeLabel, removeButton);
+  return row;
+}
+
+function addAuthorRow(author) {
+  if (!els.authorList) return;
+  els.authorList.append(createAuthorRow(author));
+}
+
+function collectAuthorList() {
+  if (!els.authorList) return [];
+
+  return [...els.authorList.querySelectorAll(".author-row")]
+    .map((row) => {
+      const name = row.querySelector("[data-author-name]")?.value.trim() || "";
+      const role = row.querySelector("[data-author-role]")?.value.trim() || "";
+      const type = row.querySelector("[data-author-type]")?.value || "other";
+      return { name, role: role || DEFAULT_ROLE_BY_TYPE[type] || "기타", type };
+    })
+    .filter((author) => author.name);
+}
+
+function ensureAuthorListSeeded() {
+  if (!els.authorList || els.authorList.children.length > 0) return;
+  addAuthorRow({ name: els.author.value.trim(), role: "지은이", type: "author" });
 }
 
 async function handleImageSelection() {
@@ -231,6 +337,7 @@ async function submitRegistration(event) {
 
   try {
     const pageText = String(els.pageCount.value || "").trim();
+    const categoryIdText = String(els.categoryId.value || "").trim();
     const normalizedPublishedAt = normalizePublishedAtInput(els.publishedAt.value);
 
     if (!normalizedPublishedAt) {
@@ -243,6 +350,8 @@ async function submitRegistration(event) {
       publisher: els.publisher.value.trim(),
       isbn13: els.isbn13.value.trim(),
       isbn10: els.isbn10.value.trim(),
+      category_id: categoryIdText ? Number(categoryIdText) : null,
+      author_list: collectAuthorList(),
       image_base64: encodedImage.base64,
       image_mime_type: encodedImage.mimeType,
       image_filename: encodedImage.fileName,
@@ -276,6 +385,10 @@ async function submitRegistration(event) {
 
     els.form.reset();
     encodedImage = null;
+    if (els.authorList) {
+      els.authorList.innerHTML = "";
+      addAuthorRow();
+    }
     if (els.imagePreviewBox) els.imagePreviewBox.classList.add("hidden");
   } catch (error) {
     setStatus(error.message || "전송 실패", "error");
@@ -294,7 +407,7 @@ function syncFormEnabled() {
   const enabled = Boolean(currentSession?.user);
   if (!els.form) return;
 
-  const targets = els.form.querySelectorAll("input, textarea, button");
+  const targets = els.form.querySelectorAll("input, textarea, select, button");
   targets.forEach((el) => {
     if (el === els.submitButton) return;
     el.disabled = !enabled;
@@ -314,9 +427,35 @@ if (els.imageFile) {
   els.imageFile.addEventListener("change", handleImageSelection);
 }
 
+if (els.addAuthorButton) {
+  els.addAuthorButton.addEventListener("click", () => addAuthorRow());
+}
+
+if (els.authorList) {
+  els.authorList.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-remove-author]");
+    if (!button) return;
+    button.closest(".author-row")?.remove();
+    ensureAuthorListSeeded();
+  });
+}
+
+if (els.author) {
+  els.author.addEventListener("blur", () => {
+    const rows = els.authorList?.querySelectorAll(".author-row") || [];
+    if (rows.length !== 1) return;
+
+    const nameInput = rows[0].querySelector("[data-author-name]");
+    if (nameInput && !nameInput.value.trim()) {
+      nameInput.value = els.author.value.trim();
+    }
+  });
+}
+
 if (els.form) {
   els.form.addEventListener("submit", submitRegistration);
 }
 
+addAuthorRow();
 syncFormEnabled();
 

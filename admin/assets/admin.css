@@ -118,6 +118,15 @@ textarea {
   resize: vertical;
 }
 
+select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  font: inherit;
+}
+
 button {
   border: none;
   border-radius: 10px;
@@ -185,6 +194,49 @@ button {
   background: #f7fafc;
 }
 
+.subform {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+  background: #fbfcfd;
+}
+
+.subform-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.subform-title {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.subform p {
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.author-list {
+  display: grid;
+  gap: 8px;
+}
+
+.author-row {
+  display: grid;
+  grid-template-columns: minmax(150px, 1.2fr) minmax(110px, 0.9fr) minmax(120px, 0.9fr) auto;
+  gap: 8px;
+  align-items: end;
+}
+
+.author-row .btn-danger {
+  min-width: 70px;
+}
+
 .mono {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 12px;
@@ -209,6 +261,10 @@ button {
 
 @media (max-width: 760px) {
   .row-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .author-row {
     grid-template-columns: 1fr;
   }
 }

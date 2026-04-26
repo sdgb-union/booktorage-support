@@ -47,9 +47,20 @@
               <input id="title" type="text" required />
             </label>
             <label>
-              저자
+              저자 표시(author_text)
               <input id="author" type="text" required />
             </label>
+          </div>
+
+          <div class="subform" data-author-list-section>
+            <div class="subform-header">
+              <div>
+                <div class="subform-title">저자 목록(author_list)</div>
+                <p>앱에서 역할별 저자 표시와 검색에 사용됩니다.</p>
+              </div>
+              <button type="button" class="btn-secondary" data-add-author-button>저자 추가</button>
+            </div>
+            <div class="author-list" data-author-list></div>
           </div>
 
           <div class="row-2">
@@ -73,6 +84,11 @@
               <input id="isbn10" type="text" placeholder="예: 89..." />
             </label>
           </div>
+
+          <label>
+            카테고리 ID(category_id, 관리자 선택)
+            <input id="categoryId" type="number" min="1" step="1" placeholder="예: 50921" />
+          </label>
 
           <div class="row-2">
             <label>
